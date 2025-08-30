@@ -7,6 +7,8 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(ISLR)
+library(dplyr)
 ```
 
 ## R Markdown
@@ -16,7 +18,43 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r cars}
-summary(cars)
+head(College)
 ```
 
 Everything else that's typed is just text. 
+
+## Problem 3
+
+In the same college data, we have the Private variable, which is an indicator of whether schools are private or public. Use a randomization test (randomized distributions) to test the statement that public schools have more applications than private schools. YOU MAY CHOOSE THE STATISTIC YOU USE FOR COMPARISON (I suggest the mean or the median, i.e, the mean number of applications for public schools is more than the mean number of applications for private schools). Pick a reasonable significance level and state your result. Comment on the data size? Are 777 data points enough to make any conclusions? Defend your statement (you don’t need to do any analysis, but just give reasoning). (Hint: This is very similar to the two-sample randomization test in the marketing example on slide 32. Use Apps instead of profit and Private in place of strategy. You will need to adjust the data sizes to match.) 
+
+```{r basic eval}
+#checking to see what data looks like
+#renaming for easier use
+priv<-College%>%filter(Private=="Yes")%>%.$Apps
+pub<-College%>%filter(Private=="No")%>%.$Apps
+hist(priv, main="Private Apps", breaks=15)
+boxplot(priv, main="Private Apps")
+hist(pub, main="Public Apps", breaks=15)
+boxplot(pub, main="Public Apps")
+mean_priv<-mean(priv)
+mean_pub<-mean(pub)
+med_priv<-median(priv)
+med_pub<-median(pub)
+mean_priv
+mean_pub
+med_priv
+med_pub
+```
+Opting to use median since more resistant to extreme outliers, both datasets have odd distributions and are heavily skewed. H_0 is that there is no significant difference in number of public vs. private school apps.
+
+```{r checking original data}
+length(priv) 
+length(pub)
+
+privvpub <-data.frame(apps=c(priv, pub),
+  app_type = c(rep("Private", 565),rep("Public", 212)))
+privvpub
+
+originalDif <- med_pub - med_priv
+originalDif
+```
