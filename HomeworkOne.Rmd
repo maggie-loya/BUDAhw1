@@ -53,7 +53,6 @@ length(pub)
 
 privvpub <-data.frame(apps=c(priv, pub),
   app_type = c(rep("Private", 565),rep("Public", 212)))
-privvpub
 
 originalDif <- med_pub - med_priv
 originalDif
@@ -67,10 +66,8 @@ set.seed(89)
 for (i in 1:1000){
   shuffled_labels <- sample(privvpub$app_type, size = 777, replace = TRUE)
   newData <- data.frame(apps = privvpub$apps, app_type = shuffled_labels)
-  newData
   
   null_meds <- tapply(newData$apps, newData$app_type, median)
-  null_meds
   new_dif <- null_meds["Public"] - null_meds["Private"]
   null_results[i] <- new_dif
 }
