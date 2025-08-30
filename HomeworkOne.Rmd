@@ -17,7 +17,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
+```{r overview}
 head(College)
 ```
 
@@ -57,4 +57,26 @@ privvpub
 
 originalDif <- med_pub - med_priv
 originalDif
+```
+
+Built out my data frame with original data so that there are two columns with the matching pairs.
+
+```{r randomization}
+null_results <- NULL
+set.seed(89) 
+for (i in 1:1000){
+  shuffled_labels <- sample(privvpub$app_type, size = 777, replace = TRUE)
+  newData <- data.frame(apps = privvpub$apps, app_type = shuffled_labels)
+  newData
+  
+  null_meds <- tapply(newData$apps, newData$app_type, median)
+  null_meds
+  new_dif <- null_meds["Public"] - null_meds["Private"]
+  null_results[i] <- new_dif
+}
+
+hist(null_results, main = "Null Distribution: Median Apps - Public vs. Private", xlab = "Median difference")
+
+p_value <- mean(abs(null_results) >= abs(originalDif))
+p_value
 ```
