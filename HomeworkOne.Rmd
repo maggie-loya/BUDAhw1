@@ -45,7 +45,7 @@ mean_pub
 med_priv
 med_pub
 ```
-Opting to use median since more resistant to extreme outliers, both datasets have odd distributions and are heavily skewed. H_0 is that there is no significant difference in number of public vs. private school apps.
+Opting to use median since more resistant to extreme outliers, both datasets have odd distributions and are heavily skewed. H_0 is that there is no significant difference in number of public vs. private school apps. H_A is that there are significantly more applications for public schools than private schools. Selecting .05 significance level since it's not a life or death situation.
 
 ```{r checking original data}
 length(priv) 
@@ -58,23 +58,31 @@ observed_dif <- med_pub - med_priv
 observed_dif
 ```
 
-Built out my data frame with original data so that there are two columns with the matching pairs.
+Built out my data frame with original data so that there are two columns with the matching pairs. For the randomization test, I'm going to shuffle the private/public labels to simulate that it doesn't matter. I'm doing this 1000 times.
 
 ```{r randomization}
-null_results <- NULL
+
 set.seed(89) 
+null_results <- NULL
 for (i in 1:1000){
-  shuffled_labels <- sample(privvpub$app_type, size = 777, replace = TRUE)
+  shuffled_labels <- sample(privvpub$app_type, length(privvpub$app_type), replace = FALSE)
   newData <- data.frame(apps = privvpub$apps, app_type = shuffled_labels)
   
-  null_meds <- tapply(newData$apps, newData$app_type, median)
-  new_dif <- null_meds["Public"] - null_meds["Private"]
+  random_result <- newData%>%group_by(app_type)%>%summarise(med_apps = median(apps, na.rm = TRUE), .groups = "drop")
+  random_result
+  
+  new_dif <- random_result$med_apps[2] - random_result$med_apps[1]
+  new_dif
+  
   null_results[i] <- new_dif
 }
-
-hist(null_results, main = "Null Distribution: Median Apps - Public vs. Private", xlab = "Median difference")
+  
+hist(null_results, main = "Null Sampling Distribution: Median Apps - Public vs. Private", xlab = "Difference in Medians")
 abline(v = observed_dif, col = "red", lwd = 2)
-
-p_value <- mean(abs(null_results) >= abs(observed_dif))
-p_value
+  
+greaterThanOrig <- null_results > observed_dif
+pval <- sum(greaterThanOrig) / 1000
+pval
 ```
+Reasonable significance was .05, and my p-value is less than .01, so we have strong reason to reject H_0 and accept H_A, that public schools receive significantly more applications than private schools. 777 data points are definitely enough observations to feel confident in results since it's a relatively large data set. However, a couple of things I am aware of and would factor into how I interpret this data - I have inequal data sets between public and private schools, and there are heavy outliers on both that are pulling the tail farther out. Although the median is more resistent, I would be inclined to trim the largest outliers off to have a better distribution.
+
