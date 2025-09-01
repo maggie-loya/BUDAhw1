@@ -88,3 +88,5 @@ pval
 ```
 My observed difference in medians wasn't even on the chart let along within the normal distribution, so it is extremely unlikely to have been due to chance. Reasonable significance was .05, and my p-value is less than .01, so we have strong reason to reject H_0 and accept H_A, that public schools receive significantly more applications than private schools. 777 data points are definitely enough observations to feel confident in results since it's a relatively large data set. However, a couple of things I am aware of and would factor into how I interpret this data - I have inequal data sets between public and private schools, and there are heavy outliers on both that are pulling the tail farther out. 
 
+AI Disclosure: I used AI to help with R syntax, debug code, and explain some of the coding concepts. All code was written first before asking for modifications/recommendations, and all explanations are my own.
+
